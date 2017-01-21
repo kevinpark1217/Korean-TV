@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TVDBSharp;
+using TVDBSharp.Models;
 
 namespace Korean_TV
 {
@@ -72,8 +74,35 @@ namespace Korean_TV
             title = Manage.exisitingTitle(contentsDir, title);
         }
 
+        private bool isMatch()
+        {
+            TVDB db = new TVDB("CBDB4A364D00EC28");
+            List<Show> results = db.Search(title, 5);
+            Console.WriteLine(results.Count);
+
+            if (results.Count > 0)
+            {
+                Show show = results.ElementAt(0);
+                List<Episode> episodes = show.Episodes;
+                foreach (Episode episode in episodes)
+                {
+                    if (episode.EpisodeNumber == this.episode && episode.FirstAired == time)
+                    {
+                        season = episode.SeasonNumber;
+                        title = show.Name;
+                        episodeTitle = episode.Title;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         public String getName(int naming)
         {
+            if (isMatch())
+                naming = 0;
+
             switch (naming)
             {
                 case 0:
