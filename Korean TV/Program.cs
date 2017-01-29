@@ -11,9 +11,9 @@ namespace Korean_TV
     {
         static void Main(string[] args)
         {
-            string varietyLink = @"https://torrentkim5.net/bbs/s.php?k=720p-NEXT&b=torrent_variety&page=";
-            string newsLink = @"https://torrentkim5.net/bbs/s.php?k=720p-NEXT&b=torrent_docu&page=";
-            string dramaLink = @"https://torrentkim5.net/bbs/s.php?k=720p-NEXT&b=torrent_tv&page=";
+            string varietyLink = @"https://torrentkim5.net/bbs/s.php?k=720p&b=torrent_variety&page=";
+            string newsLink = @"https://torrentkim5.net/bbs/s.php?k=720p&b=torrent_docu&page=";
+            string dramaLink = @"https://torrentkim5.net/bbs/s.php?k=720p&b=torrent_tv&page=";
 
             string variety = "Variety";
             string news = "News";

@@ -106,7 +106,7 @@ namespace Korean_TV
                 int depth = 0;
                 while ((contents = contents.SelectSingleNode("li")) != null)
                     depth++;
-                if (depth > 1)
+                if (depth > 1 || !name.ToUpper().Contains("720P-NEXT"))
                     return;
 
                 Item show = new Item(name, Manage.getPath(type, FolderType.Contents));

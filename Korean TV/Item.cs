@@ -77,8 +77,8 @@ namespace Korean_TV
         private bool isMatch()
         {
             TVDB db = new TVDB("CBDB4A364D00EC28");
-            List<Show> results = db.Search(title, 5);
-            Console.WriteLine(results.Count);
+            List<Show> results = db.Search(title, 1);
+            //Console.WriteLine(results.Count);
 
             if (results.Count > 0)
             {
@@ -89,8 +89,8 @@ namespace Korean_TV
                     if (episode.EpisodeNumber == this.episode && episode.FirstAired == time)
                     {
                         season = episode.SeasonNumber;
-                        title = show.Name;
-                        episodeTitle = episode.Title;
+                        //title = show.Name;
+                        //episodeTitle = episode.Title;
                         return true;
                     }
                 }
