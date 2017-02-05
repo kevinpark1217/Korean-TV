@@ -72,7 +72,8 @@ namespace Korean_TV
             foreach (HtmlNode element in contents)
             {
                 HtmlNodeCollection title = element.SelectNodes(".//td[@class='subject']/a");
-                if (title.Count == 1)
+                HtmlNode votes = element.SelectSingleNode(".//td[@class='num']/font");
+                if (title.Count == 1 || Int32.Parse(votes.InnerText) < 0)
                     continue;
                 Uri uri = new Uri(new Uri(link), WebUtility.HtmlDecode(title.ElementAt(1).GetAttributeValue("href", null)));
                 details(uri.ToString());

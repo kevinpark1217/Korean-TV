@@ -25,10 +25,11 @@ namespace Korean_TV
         {
             file = Regex.Replace(file, @"[\[]+(.?)+[\]]", "");
             file = file.Replace(".END", "");
-            file = file.Substring(0, file.LastIndexOf(".720p", StringComparison.CurrentCultureIgnoreCase));
+            file = file.Substring(0, Regex.Match(file, @"[ ._](?i:720p)").Index);
             file = file.Trim();
+            file = Regex.Replace(file, @"[\[\\\]^_`]", "");
 
-            Match dateMatch = Regex.Match(file, @"(\.\d\d\d\d\d\d)");
+            Match dateMatch = Regex.Match(file, @"[ .](\d\d\d\d\d\d)");
             string date = dateMatch.Value;
             int year = Convert.ToInt32(date.Substring(1, 2)) + 2000;
             int month = Convert.ToInt32(date.Substring(3, 2));
@@ -39,7 +40,7 @@ namespace Korean_TV
             if (dateMatch.Index + dateMatch.Length != file.Length)
                 episodeTitle = file.Substring(dateMatch.Index + dateMatch.Length + 1).Trim();
 
-            Match episodeMatch = Regex.Match(title, @"(\.E\d\d\d?\d?)");
+            Match episodeMatch = Regex.Match(title, @"[ .](E\d\d\d?\d?)");
             if (episodeMatch.Success)
             {
                 episode = Convert.ToInt32(episodeMatch.Value.Substring(2));
