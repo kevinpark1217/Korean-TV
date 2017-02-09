@@ -27,9 +27,9 @@ namespace Korean_TV
             file = file.Replace(".END", "");
             file = file.Substring(0, Regex.Match(file, @"[ ._](?i:720p)").Index);
             file = file.Trim();
-            file = Regex.Replace(file, @"[\[\\\]^_`]", "");
+            file = Regex.Replace(file, @"[\[\\\]]", "");
 
-            Match dateMatch = Regex.Match(file, @"[ .](\d\d\d\d\d\d)");
+            Match dateMatch = Regex.Match(file, @"[ ._](\d\d\d\d\d\d)");
             string date = dateMatch.Value;
             int year = Convert.ToInt32(date.Substring(1, 2)) + 2000;
             int month = Convert.ToInt32(date.Substring(3, 2));
@@ -40,7 +40,7 @@ namespace Korean_TV
             if (dateMatch.Index + dateMatch.Length != file.Length)
                 episodeTitle = file.Substring(dateMatch.Index + dateMatch.Length + 1).Trim();
 
-            Match episodeMatch = Regex.Match(title, @"[ .](E\d\d\d?\d?)");
+            Match episodeMatch = Regex.Match(title, @"[ ._](E\d\d\d?\d?)"); //ERROR
             if (episodeMatch.Success)
             {
                 episode = Convert.ToInt32(episodeMatch.Value.Substring(2));
@@ -58,11 +58,11 @@ namespace Korean_TV
                 title = title.Substring(0, seasonMatch.Index);
             }
 
-            Match uselessMatch = Regex.Match(title, @"(\d부\s)|(-\s)");
+            Match uselessMatch = Regex.Match(title, @"(\d부(\s|(작 특집 )))|(-\s)");
             if (uselessMatch.Success)
                 title = title.Substring(uselessMatch.Index + uselessMatch.Length);
 
-            Match partMatch = Regex.Match(title, @"\s\d부");
+            Match partMatch = Regex.Match(title, @"(\s\d부)$");
             if (partMatch.Success)
             {
                 if (String.IsNullOrEmpty(episodeTitle))
@@ -72,6 +72,9 @@ namespace Korean_TV
                 title = title.Substring(0, partMatch.Index);
             }
 
+            title = Regex.Replace(title, @"^[\^_`]", "");
+            Match special = Regex.Match(title, @"(기획\s)|(특집\s)");
+            title = title.Substring(special.Index + special.Length);
             title = Manage.exisitingTitle(contentsDir, title);
         }
 

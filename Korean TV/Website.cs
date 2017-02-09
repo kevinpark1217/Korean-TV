@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Korean_TV
 {
@@ -96,18 +97,19 @@ namespace Korean_TV
             {
                 HtmlDocument html = new HtmlDocument();
                 html.LoadHtml(data);
-
                 HtmlNode torrentName = html.GetElementbyId("writeContents").SelectSingleNode(".//ul/li");
                 HtmlNode torrentLink = html.GetElementbyId("file_table").SelectNodes(".//tr")[2].SelectSingleNode(".//a");
                 String name = WebUtility.HtmlDecode(torrentName.InnerHtml);
                 name = name.Substring(5, name.IndexOf("<li>") - 5).Trim();
+                HtmlNodeCollection voteButton = html.GetElementbyId("main_body").SelectNodes(".//fieldset/table/tr/td/input[@type='button']");
+                String vote = voteButton.ElementAt(0).GetAttributeValue("value", null);
                 Uri uri = new Uri(new Uri(link), WebUtility.HtmlDecode(torrentLink.GetAttributeValue("href", null)));
 
                 HtmlNode contents = html.GetElementbyId("writeContents").SelectSingleNode(".//ol");
                 int depth = 0;
                 while ((contents = contents.SelectSingleNode("li")) != null)
                     depth++;
-                if (depth > 1 || !name.ToUpper().Contains("720P-NEXT"))
+                if (depth > 1 || !name.ToUpper().Contains("720P-NEXT") || Int32.Parse(Regex.Match(vote, @"\d\d?").Value) > 0)
                     return;
 
                 Item show = new Item(name, Manage.getPath(type, FolderType.Contents));
