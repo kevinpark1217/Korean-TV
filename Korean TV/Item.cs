@@ -80,9 +80,8 @@ namespace Korean_TV
 
         private bool isMatch()
         {
-            TVDB db = new TVDB("CBDB4A364D00EC28");
+            TVDB db = new TVDB(getKey());
             List<Show> results = db.Search(title, 1);
-            //Console.WriteLine(results.Count);
 
             if (results.Count > 0)
             {
@@ -100,6 +99,15 @@ namespace Korean_TV
                 }
             }
             return false;
+        }
+
+        private String getKey()
+        {
+            List<String> keys = new List<string> { "3B93AA4377EF6427", "CBDB4A364D00EC28", "5600F962B88AF44D", "37C4E8B68F2D3ACB", "8B6F308A1E238266" };
+
+            Random random = new Random();
+            int index = random.Next(keys.Count);
+            return keys[index];
         }
 
         public String getName(int naming)

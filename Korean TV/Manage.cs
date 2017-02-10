@@ -20,7 +20,7 @@ namespace Korean_TV
         const string active = @"Active";
         const string complete = @"Complete";
         const string contents = @"Contents";
-        const int maxDays = 21;
+        public const int maxDays = 23;
 
         public static String getPath(string type, FolderType status)
         {

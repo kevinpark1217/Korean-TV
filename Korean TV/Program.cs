@@ -26,7 +26,7 @@ namespace Korean_TV
             Manage.move(Manage.getPath(news, FolderType.Complete), Manage.getPath(news, FolderType.Contents), 1);
             Manage.move(Manage.getPath(drama, FolderType.Complete), Manage.getPath(drama, FolderType.Contents), 0);
 
-            Website varietySite = new Website(variety, varietyLink, 2, 1);
+            Website varietySite = new Website(variety, varietyLink, 3, 1);
             Website newsSite = new Website(news, newsLink, 2, 1);
             Website dramaSite = new Website(drama, dramaLink, 2, 0);
 

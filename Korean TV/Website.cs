@@ -109,10 +109,12 @@ namespace Korean_TV
                 int depth = 0;
                 while ((contents = contents.SelectSingleNode("li")) != null)
                     depth++;
-                if (depth > 1 || !name.ToUpper().Contains("720P-NEXT") || Int32.Parse(Regex.Match(vote, @"\d\d?").Value) > 0)
+                if (depth > 1 || !Regex.Match(name, @"[ ._](?i:720P)[_-](NEXT)").Success || Int32.Parse(Regex.Match(vote, @"\d\d?").Value) > 0)
                     return;
 
                 Item show = new Item(name, Manage.getPath(type, FolderType.Contents));
+                if ((DateTime.Now - show.time).Days > Manage.maxDays)
+                    return;
                 show.phpsessid = phpid;
                 show.torrent = uri.ToString();
                 show.link = link;
