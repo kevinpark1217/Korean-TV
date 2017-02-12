@@ -35,17 +35,17 @@ namespace Korean_TV
             Website documentarySite = new Website(documentary, documentaryLink, 1, 1);
             Website dramaSite = new Website(drama, dramaLink, 1, 0);
 
-            if (varietySite.retrieve()) ;
-                //varietySite.download();
+            if (varietySite.retrieve())
+                varietySite.download();
             varietySite.logout();
-            if (newsSite.retrieve()) ;
-                //newsSite.download();
+            if (newsSite.retrieve())
+                newsSite.download();
             newsSite.logout();
-            if (documentarySite.retrieve()) ;
-                //documentarySite.download();
+            if (documentarySite.retrieve())
+                documentarySite.download();
             documentarySite.logout();
-            if (dramaSite.retrieve()) ;
-                //dramaSite.download();
+            if (dramaSite.retrieve())
+                dramaSite.download();
             dramaSite.logout();
 
             //Console.Read();
