@@ -56,8 +56,7 @@ namespace Korean_TV
 
         private void nextParse(String file)
         {
-
-            file = Regex.Replace(file, @"[\[]+(.?)+[\]]", "");
+            file = Regex.Replace(file, @"[\[]+(.*?)+[\]] ", "");
             file = Regex.Replace(file, @"(?i:.END)", "");
             file = file.Substring(0, Regex.Match(file, @"(?i:.720p-NEXT)").Index);
             file = file.Trim();
@@ -106,7 +105,7 @@ namespace Korean_TV
                     episodeTitle += partMatch.Value;
                 title = title.Substring(0, partMatch.Index);
             }
-            
+
             Match special = Regex.Match(title, @"(기획\s)|(특집\s)");
             title = title.Substring(special.Index + special.Length);
             title = title.Replace("특집다큐", "").Trim();
@@ -146,7 +145,9 @@ namespace Korean_TV
 
         public String getName(int naming)
         {
-            //if (isMatch()) naming = 0;
+            try { if (isMatch()) naming = 0; }
+            catch (System.Xml.XmlException) { naming = 0; }
+
             if (this.naming != -1)
                 naming = this.naming;
 
