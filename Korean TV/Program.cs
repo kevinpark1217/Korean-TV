@@ -38,13 +38,13 @@ namespace Korean_TV
             if (varietySite.retrieve())
                 varietySite.download();
             varietySite.logout();
-            if (newsSite.retrieve()) ;
+            if (newsSite.retrieve())
                 newsSite.download();
             newsSite.logout();
-            if (documentarySite.retrieve()) ;
+            if (documentarySite.retrieve())
                 documentarySite.download();
             documentarySite.logout();
-            if (dramaSite.retrieve()) ;
+            if (dramaSite.retrieve())
                 dramaSite.download();
             dramaSite.logout();
 
