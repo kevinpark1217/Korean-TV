@@ -17,19 +17,52 @@ namespace Korean_TV
         public int episode;
         public DateTime time;
 
-        public String link;
+        private int naming = -1;
         public String phpsessid;
         public String torrent;
 
         public Item(string file, string contentsDir)
         {
-            file = Regex.Replace(file, @"[\[]+(.?)+[\]]", "");
-            file = file.Replace(".END", "");
-            file = file.Substring(0, Regex.Match(file, @"[ ._](?i:720p)").Index);
-            file = file.Trim();
-            file = Regex.Replace(file, @"[\[\\\]]", "");
+            if (Regex.IsMatch(file, @"(?i:720p-NEXT)")) nextParse(file);
+            //else if (Regex.IsMatch(file, @"(?i:.720p-CineBus)")) cinebusParse(file);
+            else return;
 
-            Match dateMatch = Regex.Match(file, @"[ ._](\d\d\d\d\d\d)");
+            title = Manage.exisitingTitle(contentsDir, title);
+        }
+
+        private void cinebusParse(String file)
+        {
+            file = file.Substring(0, Regex.Match(file, @"(?i:.720p-CineBus)").Index);
+            file = Regex.Replace(file, @"(?i:.H264.AAC)", "");
+            Match dateMatch = Regex.Match(file, @"(\d\d\d\d\d\d.)");
+            string date = dateMatch.Value;
+            int year = Convert.ToInt32(date.Substring(0, 2)) + 2000;
+            int month = Convert.ToInt32(date.Substring(2, 2));
+            int day = Convert.ToInt32(date.Substring(4, 2));
+            time = new DateTime(year, month, day);
+            file = file.Substring(dateMatch.Index + dateMatch.Length);
+
+            int startIndex = file.IndexOf('「');
+            int endIndex = file.IndexOf('」');
+            if (startIndex >= 0 && endIndex >=0)
+            {
+                episodeTitle = file.Substring(startIndex + 1, endIndex - startIndex - 1);
+                file = file.Substring(0, startIndex) + file.Substring(endIndex + 1);
+            }
+
+            title = file.Trim();
+            naming = 1;
+        }
+
+        private void nextParse(String file)
+        {
+
+            file = Regex.Replace(file, @"[\[]+(.?)+[\]]", "");
+            file = Regex.Replace(file, @"(?i:.END)", "");
+            file = file.Substring(0, Regex.Match(file, @"(?i:.720p-NEXT)").Index);
+            file = file.Trim();
+            
+            Match dateMatch = Regex.Match(file, @"(.\d\d\d\d\d\d)");
             string date = dateMatch.Value;
             int year = Convert.ToInt32(date.Substring(1, 2)) + 2000;
             int month = Convert.ToInt32(date.Substring(3, 2));
@@ -40,12 +73,14 @@ namespace Korean_TV
             if (dateMatch.Index + dateMatch.Length != file.Length)
                 episodeTitle = file.Substring(dateMatch.Index + dateMatch.Length + 1).Trim();
 
-            Match episodeMatch = Regex.Match(title, @"[ ._](E\d\d\d?\d?)"); //ERROR
+            Match episodeMatch = Regex.Match(title, @"(.E\d\d\d?\d?)");
             if (episodeMatch.Success)
             {
                 episode = Convert.ToInt32(episodeMatch.Value.Substring(2));
                 title = title.Substring(0, episodeMatch.Index);
             }
+            else
+                naming = 1;
 
             Match seasonMatch = Regex.Match(title, @"\s(시즌)?\d?\d(?(1)|$)");
             if (seasonMatch.Success)
@@ -71,11 +106,10 @@ namespace Korean_TV
                     episodeTitle += partMatch.Value;
                 title = title.Substring(0, partMatch.Index);
             }
-
-            title = Regex.Replace(title, @"^[\^_`]", "");
+            
             Match special = Regex.Match(title, @"(기획\s)|(특집\s)");
             title = title.Substring(special.Index + special.Length);
-            title = Manage.exisitingTitle(contentsDir, title);
+            title = title.Replace("특집다큐", "").Trim();
         }
 
         private bool isMatch()
@@ -112,8 +146,9 @@ namespace Korean_TV
 
         public String getName(int naming)
         {
-            if (isMatch())
-                naming = 0;
+            //if (isMatch()) naming = 0;
+            if (this.naming != -1)
+                naming = this.naming;
 
             switch (naming)
             {
