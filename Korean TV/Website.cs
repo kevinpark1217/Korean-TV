@@ -101,8 +101,8 @@ namespace Korean_TV
 
         private void checkIn()
         {
-            string postData = "a=atdck&atd_text=토렌조아는 또다른 나의 즐거움~!&c=119&m=attend1";
-            byte[] postArray = Encoding.ASCII.GetBytes(postData);
+            string postData = "a=atdck&atd_text=비빕! 보봅! 안녕하세요~!&c=119&m=attend1";
+            byte[] postArray = Encoding.UTF8.GetBytes(postData);
 
             Uri address = new Uri("https://twzoa.info/");
             HttpWebRequest WebReq = (HttpWebRequest)WebRequest.Create(address);
