@@ -69,11 +69,7 @@ namespace Korean_TV
 
         private void comment(String link, String id)
         {
-            String text = "감사합니다";
-            Random rnd = new Random();
-            int num = rnd.Next(1, 10);
-            for (int i = 0; i < num; i++)
-                text += '!';
+            String text = "감사합니다~~";
             
             String m = link.Substring(link.IndexOf("m=") + 2, link.IndexOf("&") - link.IndexOf("m=") - 2);
             link = link.Substring(link.IndexOf('&') + 1);
