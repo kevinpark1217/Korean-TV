@@ -82,7 +82,7 @@ namespace Korean_TV
             foreach (HtmlNode comment in comments)
             {
                 String user = comment.SelectSingleNode("./div[@class='info_box']/span[@class='name']/strong").InnerText.Trim();
-                if (user.Equals("TekHak"))
+                if (user.Equals("ayylmao"))
                     return true;
             }
             return false;
