@@ -12,6 +12,7 @@ namespace Korean_TV
 {
     class Website
     {
+            Uri address = new Uri("https://twzoa.info/");
         private string type;
         private string link;
         private int maxPage;
@@ -33,10 +34,8 @@ namespace Korean_TV
 
         private String login()
         {
-            String username = "tekhak";
-            String password = "FB8rS2yz4uTz";
-            //String username = "ayylmao";
-            //String password = "AyyLmao";
+            String username = "ayylmao";
+            String password = "GbCPW6LgkH3i";
             string postData = "a=login&id=" + username + "&pw=" + password;
             byte[] postArray = Encoding.ASCII.GetBytes(postData);
 
@@ -67,9 +66,35 @@ namespace Korean_TV
             website("https://twzoa.info/?r=home&a=logout", phpsessid);
         }
 
+        private bool commentExist(HtmlDocument html)
+        {
+            HtmlNode frame = html.GetElementbyId("bbsview").SelectSingleNode(".//iframe[@name='commentFrame']");
+            String link = frame.GetAttributeValue("src", null);
+            Uri address = new Uri(new Uri("https://twzoa.info/"), WebUtility.HtmlDecode(link));
+
+            String data = website(address.ToString(), null);
+            if (data == null) return false;
+
+            html = new HtmlDocument();
+            html.LoadHtml(data);
+            HtmlNodeCollection comments = html.GetElementbyId("comment_box").SelectNodes("./div[@class='comment_list']");
+            if (comments == null) return false;
+            foreach (HtmlNode comment in comments)
+            {
+                String user = comment.SelectSingleNode("./div[@class='info_box']/span[@class='name']/strong").InnerText.Trim();
+                if (user.Equals("TekHak"))
+                    return true;
+            }
+            return false;
+        }
+
         private void comment(String link, String id)
         {
-            String text = "감사합니다~~";
+            String text = "감사합니다~";
+            Random rnd = new Random();
+            int num = rnd.Next(3);
+            for (int i = 0; i < num; i++)
+                text += '~';
             
             String m = link.Substring(link.IndexOf("m=") + 2, link.IndexOf("&") - link.IndexOf("m=") - 2);
             link = link.Substring(link.IndexOf('&') + 1);
@@ -173,9 +198,7 @@ namespace Korean_TV
                 if (idNode == null) continue;
                 HtmlNode title = element.SelectSingleNode(".//div[@class='ellipsis']/a");
                 String uri = new Uri(new Uri(link), WebUtility.HtmlDecode(title.GetAttributeValue("href", null))).ToString();
-                website(uri + "&a=score&value=good", phpsessid); //Like
-                comment(uri, idNode.InnerText.Trim()); //Comment
-                details(uri);
+                details(uri, idNode.InnerText.Trim());
             }
         }
 
@@ -188,7 +211,7 @@ namespace Korean_TV
         }
         */
 
-        private void details(string link)
+        private void details(string link, string id)
         {
             String data = website(link, null);
 
@@ -196,6 +219,10 @@ namespace Korean_TV
 
             HtmlDocument html = new HtmlDocument();
             html.LoadHtml(data);
+            
+            website(link + "&a=score&value=good", phpsessid); //Like
+            if(!commentExist(html))
+                comment(link, id); //Comment
 
             HtmlNode torrentLink = html.GetElementbyId("vContent").SelectSingleNode("./div[@class='attach']/ul/a");
             Uri uri = new Uri(new Uri(link), WebUtility.HtmlDecode(torrentLink.GetAttributeValue("href", null)));
