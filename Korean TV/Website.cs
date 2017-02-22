@@ -34,8 +34,8 @@ namespace Korean_TV
 
         private String login()
         {
-            String username = "ayylmao";
-            String password = "GbCPW6LgkH3i";
+            String username = "itanimulli";
+            String password = "d20yi2kqexl1";
             string postData = "a=login&id=" + username + "&pw=" + password;
             byte[] postArray = Encoding.ASCII.GetBytes(postData);
 
@@ -70,20 +70,27 @@ namespace Korean_TV
         {
             HtmlNode frame = html.GetElementbyId("bbsview").SelectSingleNode(".//iframe[@name='commentFrame']");
             String link = frame.GetAttributeValue("src", null);
-            Uri address = new Uri(new Uri("https://twzoa.info/"), WebUtility.HtmlDecode(link));
 
-            String data = website(address.ToString(), null);
-            if (data == null) return false;
-
-            html = new HtmlDocument();
-            html.LoadHtml(data);
-            HtmlNodeCollection comments = html.GetElementbyId("comment_box").SelectNodes("./div[@class='comment_list']");
-            if (comments == null) return false;
-            foreach (HtmlNode comment in comments)
+            int page = 1;
+            while(true)
             {
-                String user = comment.SelectSingleNode("./div[@class='info_box']/span[@class='name']/strong").InnerText.Trim();
-                if (user.Equals("ayylmao"))
-                    return true;
+                Uri address = new Uri(new Uri("https://twzoa.info/"), WebUtility.HtmlDecode(link) + "&p=" + page);
+                String data = website(address.ToString(), null);
+                if (data == null) return false;
+
+                html = new HtmlDocument();
+                html.LoadHtml(data);
+                HtmlNodeCollection comments = html.GetElementbyId("comment_box").SelectNodes("./div[@class='comment_list']");
+
+                if (comments == null)
+                    break;
+                foreach (HtmlNode comment in comments)
+                {
+                    String user = comment.SelectSingleNode("./div[@class='info_box']/span[@class='name']/strong").InnerText.Trim();
+                    if (user.Equals("Itanimulli"))
+                        return true;
+                }
+                page++;
             }
             return false;
         }
