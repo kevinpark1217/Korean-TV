@@ -21,6 +21,11 @@ namespace Korean_TV
             string documentary = "Documentary";
             string drama = "Drama";
 
+            Manage.scrap(Manage.getPath(variety, FolderType.Active));
+            Manage.scrap(Manage.getPath(news, FolderType.Active));
+            Manage.scrap(Manage.getPath(documentary, FolderType.Active));
+            Manage.scrap(Manage.getPath(drama, FolderType.Active));
+
             Manage.remove(Manage.getPath(variety, FolderType.Contents));
             Manage.remove(Manage.getPath(news, FolderType.Contents));
             Manage.remove(Manage.getPath(documentary, FolderType.Contents));

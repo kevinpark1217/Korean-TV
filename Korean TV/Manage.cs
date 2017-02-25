@@ -21,6 +21,7 @@ namespace Korean_TV
         const string complete = @"Complete";
         const string contents = @"Contents";
         public const int maxDays = 23;
+        public const int maxHours = 6;
 
         public static String getPath(string type, FolderType status)
         {
@@ -39,6 +40,17 @@ namespace Korean_TV
                     return Path.Combine(dir, contents);
                 default:
                     return null;
+            }
+        }
+
+        public static void scrap(string dir)
+        {
+            string[] files = Directory.GetFiles(dir);
+            foreach(string file in files)
+            {
+                DateTime modify = File.GetLastWriteTime(file);
+                if ((DateTime.Now - modify).Hours > maxHours)
+                    File.Delete(file);
             }
         }
 
