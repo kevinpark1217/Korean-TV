@@ -35,7 +35,7 @@ namespace Korean_TV
 
         private void unknownParse(String file)
         {
-            file = Regex.Replace(file, @"(?i:.HDTV.H264)", "");
+            file = Regex.Replace(file, @"(?i:((\.)?HDTV\.H264))", "");
             file = Regex.Replace(file, @"(?i:.((720)|(450))p-Unknown)", ".720p-NEXT");
 
             nextParse(file);
