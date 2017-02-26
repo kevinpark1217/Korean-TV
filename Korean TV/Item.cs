@@ -37,7 +37,7 @@ namespace Korean_TV
         private void solkaeParse(String file)
         {
             file = Regex.Replace(file, @"(?i:\.HDTV\.x264)", "");
-            file = Regex.Replace(file, @"(?i:\.720p-SolKae™", ".720p-NEXT");
+            file = Regex.Replace(file, @"(?i:\.720p-SolKae™)", ".720p-NEXT");
 
             nextParse(file);
         }
