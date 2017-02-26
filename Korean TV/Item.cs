@@ -25,9 +25,20 @@ namespace Korean_TV
         {
             if (Regex.IsMatch(file, @"(?i:720p-NEXT)")) nextParse(file);
             //else if (Regex.IsMatch(file, @"(?i:.720p-CineBus)")) cinebusParse(file);
+            if (Regex.IsMatch(file, @"(?i:.((720)|(450))p-Unknown)")) unknownParse(file);
             else return;
 
+            if (title == null)
+                return;
             title = Manage.exisitingTitle(contentsDir, title);
+        }
+
+        private void unknownParse(String file)
+        {
+            file = Regex.Replace(file, @"(?i:.HDTV.H264)", "");
+            file = Regex.Replace(file, @"(?i:.((720)|(450))p-Unknown)", ".720p-NEXT");
+
+            nextParse(file);
         }
 
         private void cinebusParse(String file)
