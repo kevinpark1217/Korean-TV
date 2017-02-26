@@ -23,6 +23,7 @@ namespace Korean_TV
 
         public Item(string file, string contentsDir)
         {
+            file = file.Replace("[토렌트] ", "");
             if (Regex.IsMatch(file, @"(?i:\.720p-NEXT)")) nextParse(file);
             //else if (Regex.IsMatch(file, @"(?i:.720p-CineBus)")) cinebusParse(file);
             else if (Regex.IsMatch(file, @"(?i:\.((720)|(450))p-Unknown)")) unknownParse(file);
@@ -44,6 +45,7 @@ namespace Korean_TV
 
         private void unknownParse(String file)
         {
+            file = Regex.Replace(file, @"[\[\]]", "");
             file = Regex.Replace(file, @"(?i:((\.)?HDTV\.H264))", "");
             file = Regex.Replace(file, @"(?i:\.((720)|(450))p-Unknown)", ".720p-NEXT");
 
