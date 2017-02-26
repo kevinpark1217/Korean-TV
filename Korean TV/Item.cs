@@ -23,9 +23,10 @@ namespace Korean_TV
 
         public Item(string file, string contentsDir)
         {
-            if (Regex.IsMatch(file, @"(?i:720p-NEXT)")) nextParse(file);
+            if (Regex.IsMatch(file, @"(?i:\.720p-NEXT)")) nextParse(file);
             //else if (Regex.IsMatch(file, @"(?i:.720p-CineBus)")) cinebusParse(file);
-            if (Regex.IsMatch(file, @"(?i:.((720)|(450))p-Unknown)")) unknownParse(file);
+            else if (Regex.IsMatch(file, @"(?i:\.((720)|(450))p-Unknown)")) unknownParse(file);
+            else if (Regex.IsMatch(file, @"(?i:\.720p-SolKae™)")) solkaeParse(file);
             else return;
 
             if (title == null)
@@ -33,19 +34,25 @@ namespace Korean_TV
             title = Manage.exisitingTitle(contentsDir, title);
         }
 
+        private void solkaeParse(String file)
+        {
+            file = Regex.Replace(file, @"(?i:\.HDTV\.x264)", "");
+            file = Regex.Replace(file, @"(?i:\.720p-SolKae™", ".720p-NEXT");
+        }
+
         private void unknownParse(String file)
         {
             file = Regex.Replace(file, @"(?i:((\.)?HDTV\.H264))", "");
-            file = Regex.Replace(file, @"(?i:.((720)|(450))p-Unknown)", ".720p-NEXT");
+            file = Regex.Replace(file, @"(?i:\.((720)|(450))p-Unknown)", ".720p-NEXT");
 
             nextParse(file);
         }
 
         private void cinebusParse(String file)
         {
-            file = file.Substring(0, Regex.Match(file, @"(?i:.720p-CineBus)").Index);
-            file = Regex.Replace(file, @"(?i:.H264.AAC)", "");
-            Match dateMatch = Regex.Match(file, @"(\d\d\d\d\d\d.)");
+            file = file.Substring(0, Regex.Match(file, @"(?i:\.720p-CineBus)").Index);
+            file = Regex.Replace(file, @"(?i:\.H264\.AAC)", "");
+            Match dateMatch = Regex.Match(file, @"(\d\d\d\d\d\d\.)");
             string date = dateMatch.Value;
             int year = Convert.ToInt32(date.Substring(0, 2)) + 2000;
             int month = Convert.ToInt32(date.Substring(2, 2));
@@ -68,11 +75,11 @@ namespace Korean_TV
         private void nextParse(String file)
         {
             file = Regex.Replace(file, @"[\[]+(.*?)+[\]] ", "");
-            file = Regex.Replace(file, @"(?i:.END)", "");
-            file = file.Substring(0, Regex.Match(file, @"(?i:.720p-NEXT)").Index);
+            file = Regex.Replace(file, @"(?i:\.END)", "");
+            file = file.Substring(0, Regex.Match(file, @"(?i:\.720p-NEXT)").Index);
             file = file.Trim();
             
-            Match dateMatch = Regex.Match(file, @"(.\d\d\d\d\d\d)");
+            Match dateMatch = Regex.Match(file, @"(\.\d\d\d\d\d\d)");
             string date = dateMatch.Value;
             int year = Convert.ToInt32(date.Substring(1, 2)) + 2000;
             int month = Convert.ToInt32(date.Substring(3, 2));
@@ -83,7 +90,7 @@ namespace Korean_TV
             if (dateMatch.Index + dateMatch.Length != file.Length)
                 episodeTitle = file.Substring(dateMatch.Index + dateMatch.Length + 1).Trim();
 
-            Match episodeMatch = Regex.Match(title, @"(.E\d\d\d?\d?)");
+            Match episodeMatch = Regex.Match(title, @"(\.E\d\d\d?\d?)");
             if (episodeMatch.Success)
             {
                 episode = Convert.ToInt32(episodeMatch.Value.Substring(2));
