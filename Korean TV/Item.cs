@@ -38,6 +38,8 @@ namespace Korean_TV
         {
             file = Regex.Replace(file, @"(?i:\.HDTV\.x264)", "");
             file = Regex.Replace(file, @"(?i:\.720p-SolKae™", ".720p-NEXT");
+
+            nextParse(file);
         }
 
         private void unknownParse(String file)
