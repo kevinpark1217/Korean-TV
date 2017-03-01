@@ -12,34 +12,29 @@ namespace Korean_TV
 {
     class Website
     {
-            Uri address = new Uri("https://twzoa.info/");
+        private static readonly Uri address = new Uri("https://twzoa.info/");
         private string type;
-        private string link;
+        private string listAddress;
         private int maxPage;
         private int naming;
         private String phpsessid;
         private List<Item> list;
 
-        public Website(string type, string link, int maxPage, int naming)
+        public Website(string type, string listAddress, string phpsessid, int maxPage, int naming)
         {
             this.type = type;
-            this.link = link;
+            this.listAddress = listAddress;
             this.maxPage = maxPage;
             this.naming = naming;
+            this.phpsessid = phpsessid;
             list = new List<Item>();
-
-            phpsessid = login();
-            checkIn();
         }
 
-        private String login()
+        public static String login(string username, string password)
         {
-            String username = "itanimulli";
-            String password = "d20yi2kqexl1";
             string postData = "a=login&id=" + username + "&pw=" + password;
             byte[] postArray = Encoding.ASCII.GetBytes(postData);
 
-            Uri address = new Uri("https://twzoa.info/");
             HttpWebRequest WebReq = (HttpWebRequest)WebRequest.Create(address);
             WebReq.Method = "POST";
             WebReq.ContentType = "application/x-www-form-urlencoded";
@@ -61,7 +56,7 @@ namespace Korean_TV
             return cookie.Substring(separate + 1);
         }
 
-        public void logout()
+        public static void logout(String phpsessid)
         {
             website("https://twzoa.info/?r=home&a=logout", phpsessid);
         }
@@ -74,8 +69,8 @@ namespace Korean_TV
             int page = 1;
             while(true)
             {
-                Uri address = new Uri(new Uri("https://twzoa.info/"), WebUtility.HtmlDecode(link) + "&p=" + page);
-                String data = website(address.ToString(), null);
+                Uri fullAddress = new Uri(address, WebUtility.HtmlDecode(link) + "&p=" + page);
+                String data = website(fullAddress.ToString(), null);
                 if (data == null) return false;
 
                 html = new HtmlDocument();
@@ -112,8 +107,7 @@ namespace Korean_TV
 
             string postData = "a=write&content=" + text + "&cync=" + metadata + "&m=comment";
             byte[] postArray = Encoding.UTF8.GetBytes(postData);
-
-            Uri address = new Uri("https://twzoa.info/");
+            
             HttpWebRequest WebReq = (HttpWebRequest)WebRequest.Create(address);
             WebReq.Method = "POST";
             WebReq.ContentType = "application/x-www-form-urlencoded";
@@ -131,12 +125,11 @@ namespace Korean_TV
             WebResp.Close();
         }
 
-        private void checkIn()
+        public static void checkIn(String phpsessid)
         {
             string postData = "a=atdck&atd_text=비빕! 보봅! 안녕하세요~!&c=119&m=attend1";
             byte[] postArray = Encoding.UTF8.GetBytes(postData);
-
-            Uri address = new Uri("https://twzoa.info/");
+            
             HttpWebRequest WebReq = (HttpWebRequest)WebRequest.Create(address);
             WebReq.Method = "POST";
             WebReq.ContentType = "application/x-www-form-urlencoded";
@@ -159,7 +152,8 @@ namespace Korean_TV
         {
             for (int page = 1; page <= maxPage; page++)
             {
-                String data = website(link + page, null);
+                Uri uri = new Uri(address, listAddress + page);
+                String data = website(uri.ToString(), null);
                 if (data != null)
                     parse(data);
             }
@@ -169,7 +163,7 @@ namespace Korean_TV
             return true;
         }
 
-        private String website(String urlAddress, String phpsessid)
+        private static String website(String urlAddress, String phpsessid)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
             if(phpsessid != null)
@@ -204,7 +198,7 @@ namespace Korean_TV
                 HtmlNode idNode = element.SelectSingleNode("./td[@class='now']");
                 if (idNode == null) continue;
                 HtmlNode title = element.SelectSingleNode(".//div[@class='ellipsis']/a");
-                String uri = new Uri(new Uri(link), WebUtility.HtmlDecode(title.GetAttributeValue("href", null))).ToString();
+                String uri = new Uri(address, WebUtility.HtmlDecode(title.GetAttributeValue("href", null))).ToString();
                 details(uri, idNode.InnerText.Trim());
             }
         }

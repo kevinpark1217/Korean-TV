@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using TVDBSharp;
-using TVDBSharp.Models;
 
 namespace Korean_TV
 {
@@ -27,7 +25,7 @@ namespace Korean_TV
             if (Regex.IsMatch(file, @"(?i:\.720p-NEXT)")) nextParse(file);
             //else if (Regex.IsMatch(file, @"(?i:.720p-CineBus)")) cinebusParse(file);
             else if (Regex.IsMatch(file, @"(?i:\.((720)|(450))p-Unknown)")) unknownParse(file);
-            else if (Regex.IsMatch(file, @"(?i:\.720p-SolKae™)")) solkaeParse(file);
+            //else if (Regex.IsMatch(file, @"(?i:\.720p-SolKae™)")) solkaeParse(file);
             else return;
 
             if (title == null)
@@ -135,34 +133,19 @@ namespace Korean_TV
 
         private bool isMatch()
         {
-            TVDB db = new TVDB(getKey());
-            List<Show> results = db.Search(title, 1);
+            int id = TheTVDB.search(title);
+            if (id == -1) return false;
 
-            if (results.Count > 0)
+            List<Tuple<int, int, DateTime>> episodes = TheTVDB.episodes(id);
+            foreach (Tuple<int, int, DateTime> show in episodes)
             {
-                Show show = results.ElementAt(0);
-                List<Episode> episodes = show.Episodes;
-                foreach (Episode episode in episodes)
+                if (show.Item2 == episode && show.Item3.Date == time.Date)
                 {
-                    if (episode.EpisodeNumber == this.episode && episode.FirstAired == time)
-                    {
-                        season = episode.SeasonNumber;
-                        //title = show.Name;
-                        //episodeTitle = episode.Title;
-                        return true;
-                    }
+                    season = show.Item1;
+                    return true;
                 }
             }
             return false;
-        }
-
-        private String getKey()
-        {
-            List<String> keys = new List<string> { "3B93AA4377EF6427", "CBDB4A364D00EC28", "5600F962B88AF44D", "37C4E8B68F2D3ACB", "8B6F308A1E238266" };
-
-            Random random = new Random();
-            int index = random.Next(keys.Count);
-            return keys[index];
         }
 
         public String getName(int naming)
