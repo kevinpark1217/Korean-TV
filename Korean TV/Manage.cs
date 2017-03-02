@@ -16,11 +16,11 @@ namespace Korean_TV
 
     class Manage
     {
-        const string path = @"T:\Korean TV";
+        const string path = @"K:\";
         const string active = @"Active";
         const string complete = @"Complete";
         const string contents = @"Contents";
-        public const int maxDays = 23;
+        public const int maxDays = 30;
         public const int maxHours = 6;
 
         public static String getPath(string type, FolderType status)
