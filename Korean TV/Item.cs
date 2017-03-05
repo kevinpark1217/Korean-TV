@@ -150,9 +150,7 @@ namespace Korean_TV
 
         public String getName(int naming)
         {
-            try { if (isMatch()) naming = 0; }
-            catch (System.Xml.XmlException) { naming = 0; }
-
+            if (isMatch()) naming = 0;
             if (this.naming != -1)
                 naming = this.naming;
 

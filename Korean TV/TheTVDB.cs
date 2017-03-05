@@ -1,10 +1,12 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Korean_TV
@@ -19,8 +21,9 @@ namespace Korean_TV
             authObject.Add(new JProperty("apikey", apiKey));
             authObject.Add(new JProperty("username", username));
             authObject.Add(new JProperty("userkey", userkey));
-
-            JToken response = JObject.Parse(POST(new Uri(address, "/login").ToString(), authObject.ToString()));
+            
+            String json = POST(new Uri(address, "/login").ToString(), authObject.ToString());
+            JToken response = JObject.Parse(json);
             return (String)response.SelectToken("token");
 
         }
@@ -43,6 +46,7 @@ namespace Korean_TV
             while(true)
             {
                 Uri uri = new Uri(address, "/series/" + id + "/episodes?page=" + page);
+
                 String json = GET(uri.ToString());
                 JArray data = (JArray)JObject.Parse(json).SelectToken("data");
 
@@ -66,6 +70,7 @@ namespace Korean_TV
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "POST";
+            request.Timeout = 25000;
 
             UTF8Encoding encoding = new UTF8Encoding();
             Byte[] byteArray = encoding.GetBytes(jsonContent);
@@ -88,31 +93,52 @@ namespace Korean_TV
 
         private static string GET(string url)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.ContentType = @"application/json";
-            request.Headers["Authorization"] = "Bearer " + Program.token;
-            request.Headers["Accept-Language"] = "ko";
-            
-            try
+            String json = null;
+            const int attempts = 10;
+            for(int i=0; i< attempts; i++)
             {
-                WebResponse response = request.GetResponse();
-                using (Stream responseStream = response.GetResponseStream())
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.ContentType = @"application/json";
+                request.Headers["Authorization"] = "Bearer " + Program.token;
+                request.Headers["Accept-Language"] = "ko";
+                request.Timeout = 25000;
+
+                try
                 {
-                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
-                    String data = reader.ReadToEnd();
-                    return WebUtility.HtmlDecode(data);
+                    WebResponse response = request.GetResponse();
+                    using (Stream responseStream = response.GetResponseStream())
+                    {
+                        StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                        String data = reader.ReadToEnd();
+                        json = WebUtility.HtmlDecode(data);
+                    }
                 }
-            }
-            catch (WebException ex)
-            {
-                WebResponse errorResponse = ex.Response;
-                using (Stream responseStream = errorResponse.GetResponseStream())
+                catch (WebException ex)
                 {
-                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
-                    String errorText = reader.ReadToEnd();
-                    return WebUtility.HtmlDecode(errorText);
+                    if (ex.Status == WebExceptionStatus.Timeout)
+                        continue;
+                    WebResponse errorResponse = ex.Response;
+                    using (Stream responseStream = errorResponse.GetResponseStream())
+                    {
+                        StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                        String errorText = reader.ReadToEnd();
+                        json = WebUtility.HtmlDecode(errorText);
+                    }
                 }
+
+                try
+                {
+                    JObject.Parse(json);
+                }
+                catch (JsonReaderException)
+                {
+                    continue;
+                }
+
+                break;
             }
+
+            return json;
         }
 
     }
