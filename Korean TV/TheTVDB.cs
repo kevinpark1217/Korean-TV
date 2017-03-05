@@ -7,7 +7,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Korean_TV
 {
@@ -70,7 +69,7 @@ namespace Korean_TV
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "POST";
-            request.Timeout = 25000;
+            request.Timeout = 60000;
 
             UTF8Encoding encoding = new UTF8Encoding();
             Byte[] byteArray = encoding.GetBytes(jsonContent);
@@ -138,6 +137,7 @@ namespace Korean_TV
                 break;
             }
 
+            Thread.Sleep(1000);
             return json;
         }
 

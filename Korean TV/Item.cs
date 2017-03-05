@@ -31,6 +31,7 @@ namespace Korean_TV
             if (title == null)
                 return;
             title = Manage.exisitingTitle(contentsDir, title);
+            if (isMatch()) naming = 0;
         }
 
         private void solkaeParse(String file)
@@ -150,7 +151,6 @@ namespace Korean_TV
 
         public String getName(int naming)
         {
-            if (isMatch()) naming = 0;
             if (this.naming != -1)
                 naming = this.naming;
 
