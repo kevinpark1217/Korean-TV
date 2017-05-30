@@ -15,16 +15,14 @@ namespace Korean_TV
         private static readonly Uri address = new Uri("https://twzoa.info/");
         private string type;
         private string listAddress;
-        private int maxPage;
         private int naming;
         private String phpsessid;
         private List<Item> list;
 
-        public Website(string type, string listAddress, string phpsessid, int maxPage, int naming)
+        public Website(string type, string listAddress, string phpsessid, int naming)
         {
             this.type = type;
             this.listAddress = listAddress;
-            this.maxPage = maxPage;
             this.naming = naming;
             this.phpsessid = phpsessid;
             list = new List<Item>();
@@ -33,7 +31,7 @@ namespace Korean_TV
         public static String login(string username, string password)
         {
             string postData = "a=login&id=" + username + "&pw=" + password;
-            byte[] postArray = Encoding.ASCII.GetBytes(postData);
+            byte[] postArray = Encoding.UTF8.GetBytes(postData);
 
             HttpWebRequest WebReq = (HttpWebRequest)WebRequest.Create(address);
             WebReq.Method = "POST";
@@ -148,9 +146,9 @@ namespace Korean_TV
             WebResp.Close();
         }
 
-        public bool retrieve()
+        public bool retrieve(int minPage, int maxPage)
         {
-            for (int page = 1; page <= maxPage; page++)
+            for (int page = minPage; page <= maxPage; page++)
             {
                 Uri uri = new Uri(address, listAddress + page);
                 String data = website(uri.ToString(), null);
@@ -226,8 +224,10 @@ namespace Korean_TV
                 comment(link, id); //Comment
 
             HtmlNode torrentLink = html.GetElementbyId("vContent").SelectSingleNode("./div[@class='attach']/ul/a");
+            if (torrentLink == null)
+                return;
             Uri uri = new Uri(new Uri(link), WebUtility.HtmlDecode(torrentLink.GetAttributeValue("href", null)));
-            HtmlNode torrentName = html.GetElementbyId("bbsview").SelectSingleNode("./div[@class='viewbox']/div[@class='subject']/li");
+            HtmlNode torrentName = html.GetElementbyId("bbsview").SelectSingleNode("./div[@class='viewbox']/div[@class='subject']/li[@class='title']");
             String name = WebUtility.HtmlDecode(torrentName.InnerText).Trim();
 
             HtmlNodeCollection contents = html.GetElementbyId("vContent").SelectNodes(".//div[@class='attach_list']/ul/li");
@@ -255,8 +255,8 @@ namespace Korean_TV
                         break;
                 if (i != j)
                     continue;
-                
-                if(! Manage.check(show, Manage.getPath(type, FolderType.Contents), naming))
+
+                if (!Manage.check(show, Manage.getPath(type, FolderType.Contents), naming))
                     torrent(show);
             }
         }

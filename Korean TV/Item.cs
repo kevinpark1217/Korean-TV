@@ -22,10 +22,10 @@ namespace Korean_TV
         public Item(string file, string contentsDir)
         {
             file = file.Replace("[토렌트] ", "");
-            if (Regex.IsMatch(file, @"(?i:\.720p-NEXT)")) nextParse(file);
-            //else if (Regex.IsMatch(file, @"(?i:.720p-CineBus)")) cinebusParse(file);
-            else if (Regex.IsMatch(file, @"(?i:\.((720)|(450))p-Unknown)")) unknownParse(file);
-            //else if (Regex.IsMatch(file, @"(?i:\.720p-SolKae™)")) solkaeParse(file);
+            if (Regex.IsMatch(file, @"(?i:\.720p[-\ ]NEXT)")) nextParse(file);
+            //else if (Regex.IsMatch(file, @"(?i:.720p[-\ ]CineBus)")) cinebusParse(file);
+            else if (Regex.IsMatch(file, @"(?i:\.((720)|(450))p[-\ ]Unknown)")) unknownParse(file);
+            //else if (Regex.IsMatch(file, @"(?i:\.720p[-\ ]SolKae™)")) solkaeParse(file);
             else return;
 
             if (title == null)
@@ -37,7 +37,7 @@ namespace Korean_TV
         private void solkaeParse(String file)
         {
             file = Regex.Replace(file, @"(?i:\.HDTV\.x264)", "");
-            file = Regex.Replace(file, @"(?i:\.720p-SolKae™)", ".720p-NEXT");
+            file = Regex.Replace(file, @"(?i:\.720p[-\ ]SolKae™)", ".720p-NEXT");
 
             nextParse(file);
         }
@@ -46,14 +46,14 @@ namespace Korean_TV
         {
             file = Regex.Replace(file, @"[\[\]]", "");
             file = Regex.Replace(file, @"(?i:((\.)?HDTV\.H264))", "");
-            file = Regex.Replace(file, @"(?i:\.((720)|(450))p-Unknown)", ".720p-NEXT");
+            file = Regex.Replace(file, @"(?i:\.((720)|(450))p[-\ ]Unknown)", ".720p-NEXT");
 
             nextParse(file);
         }
 
         private void cinebusParse(String file)
         {
-            file = file.Substring(0, Regex.Match(file, @"(?i:\.720p-CineBus)").Index);
+            file = file.Substring(0, Regex.Match(file, @"(?i:\.720p[-\ ]CineBus)").Index);
             file = Regex.Replace(file, @"(?i:\.H264\.AAC)", "");
             Match dateMatch = Regex.Match(file, @"(\d\d\d\d\d\d\.)");
             string date = dateMatch.Value;
@@ -79,7 +79,7 @@ namespace Korean_TV
         {
             file = Regex.Replace(file, @"[\[]+(.*?)+[\]] ", "");
             file = Regex.Replace(file, @"(?i:\.END)", "");
-            file = file.Substring(0, Regex.Match(file, @"(?i:\.720p-NEXT)").Index);
+            file = file.Substring(0, Regex.Match(file, @"(?i:\.720p[-\ ]NEXT)").Index);
             file = file.Trim();
             
             Match dateMatch = Regex.Match(file, @"(\.\d\d\d\d\d\d)");

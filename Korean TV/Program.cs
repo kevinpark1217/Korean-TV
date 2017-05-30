@@ -40,15 +40,15 @@ namespace Korean_TV
             String phpsessid = Website.login(username, password);
             Website.checkIn(phpsessid);
 
-            Website varietySite = new Website(variety, varietyLink, phpsessid, 3, 1);
-            Website newsSite = new Website(news, newsLink, phpsessid, 2, 1);
-            Website dramaSite = new Website(drama, dramaLink, phpsessid, 1, 0);
-
-            if (varietySite.retrieve())
+            Website varietySite = new Website(variety, varietyLink, phpsessid, 1);
+            Website newsSite = new Website(news, newsLink, phpsessid, 1);
+            Website dramaSite = new Website(drama, dramaLink, phpsessid, 0);
+            
+            if (varietySite.retrieve(1, 2))
                 varietySite.download();
-            if (newsSite.retrieve())
+            if (newsSite.retrieve(1, 1))
                 newsSite.download();
-            if (dramaSite.retrieve())
+            if (dramaSite.retrieve(1, 1))
                 dramaSite.download();
 
             Website.logout(phpsessid);
