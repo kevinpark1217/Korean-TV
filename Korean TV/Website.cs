@@ -12,7 +12,8 @@ namespace Korean_TV
 {
     class Website
     {
-        private static readonly Uri address = new Uri("https://twzoa.info/");
+        private static readonly String domain = "tczoa.info";
+        private static readonly Uri address = new Uri("https://" + domain + "/");
         private string type;
         private string listAddress;
         private int naming;
@@ -63,7 +64,7 @@ namespace Korean_TV
 
         public static void logout(String[,] creds)
         {
-            website("https://twzoa.info/?r=home&a=logout", creds);
+            website("https://" + domain + "/?r=home&a=logout", creds);
         }
 
         private bool commentExist(HtmlDocument html)
@@ -119,7 +120,7 @@ namespace Korean_TV
             WebReq.ContentLength = postArray.Length;
             WebReq.CookieContainer = new CookieContainer();
             for (int i = 0; i < cookies.GetLength(0); i++)
-                WebReq.CookieContainer.Add(new Cookie(cookies[i, 0], cookies[i, 1], "/", "twzoa.info"));
+                WebReq.CookieContainer.Add(new Cookie(cookies[i, 0], cookies[i, 1], "/", domain));
 
             Stream PostData = WebReq.GetRequestStream();
             PostData.Write(postArray, 0, postArray.Length);
@@ -142,7 +143,7 @@ namespace Korean_TV
             WebReq.ContentLength = postArray.Length;
             WebReq.CookieContainer = new CookieContainer();
             for (int i = 0; i < creds.GetLength(0); i++)
-                WebReq.CookieContainer.Add(new Cookie(creds[i, 0], creds[i, 1], "/", "twzoa.info"));
+                WebReq.CookieContainer.Add(new Cookie(creds[i, 0], creds[i, 1], "/", domain));
 
             Stream PostData = WebReq.GetRequestStream();
             PostData.Write(postArray, 0, postArray.Length);
@@ -177,7 +178,7 @@ namespace Korean_TV
             {
                 request.CookieContainer = new CookieContainer();
                 for (int i = 0; i < cookies.GetLength(0); i++)
-                    request.CookieContainer.Add(new Cookie(cookies[i, 0], cookies[i, 1], "/", "twzoa.info"));
+                    request.CookieContainer.Add(new Cookie(cookies[i, 0], cookies[i, 1], "/", domain));
             }
 
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
@@ -275,7 +276,7 @@ namespace Korean_TV
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(show.torrent);
             req.CookieContainer = new CookieContainer();
             for (int i = 0; i < cookies.GetLength(0); i++)
-                req.CookieContainer.Add(new Cookie(cookies[i, 0], cookies[i, 1], "/", "twzoa.info"));
+                req.CookieContainer.Add(new Cookie(cookies[i, 0], cookies[i, 1], "/", domain));
             HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
             Stream sr = resp.GetResponseStream();
             
