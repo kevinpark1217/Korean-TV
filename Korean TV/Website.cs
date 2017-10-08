@@ -16,19 +16,19 @@ namespace Korean_TV
         private string type;
         private string listAddress;
         private int naming;
-        private String phpsessid;
+        private String[,] cookies;
         private List<Item> list;
 
-        public Website(string type, string listAddress, string phpsessid, int naming)
+        public Website(string type, string listAddress, String[,] cookies, int naming)
         {
             this.type = type;
             this.listAddress = listAddress;
             this.naming = naming;
-            this.phpsessid = phpsessid;
+            this.cookies = cookies;
             list = new List<Item>();
         }
 
-        public static String login(string username, string password)
+        public static String[,] login(string username, string password)
         {
             string postData = "a=login&id=" + username + "&pw=" + password;
             byte[] postArray = Encoding.UTF8.GetBytes(postData);
@@ -50,13 +50,20 @@ namespace Korean_TV
             String cookie = WebReq.CookieContainer.GetCookieHeader(address);
             WebResp.Close();
 
-            int separate = cookie.IndexOf('=');
-            return cookie.Substring(separate + 1);
+            String[] segmented = cookie.Split(';');
+            String[,] cookies = new String[segmented.Length, 2];
+            for(int i=0; i < segmented.Length; i++)
+            {
+                int splitIndex = segmented[i].IndexOf('=');
+                cookies[i, 0] = segmented[i].Substring(0, splitIndex);
+                cookies[i, 1] = segmented[i].Substring(splitIndex + 1);
+            }
+            return cookies;
         }
 
-        public static void logout(String phpsessid)
+        public static void logout(String[,] creds)
         {
-            website("https://twzoa.info/?r=home&a=logout", phpsessid);
+            website("https://twzoa.info/?r=home&a=logout", creds);
         }
 
         private bool commentExist(HtmlDocument html)
@@ -111,7 +118,8 @@ namespace Korean_TV
             WebReq.ContentType = "application/x-www-form-urlencoded";
             WebReq.ContentLength = postArray.Length;
             WebReq.CookieContainer = new CookieContainer();
-            WebReq.CookieContainer.Add(new Cookie("PHPSESSID", phpsessid, "/", "twzoa.info"));
+            for (int i = 0; i < cookies.GetLength(0); i++)
+                WebReq.CookieContainer.Add(new Cookie(cookies[i, 0], cookies[i, 1], "/", "twzoa.info"));
 
             Stream PostData = WebReq.GetRequestStream();
             PostData.Write(postArray, 0, postArray.Length);
@@ -123,7 +131,7 @@ namespace Korean_TV
             WebResp.Close();
         }
 
-        public static void checkIn(String phpsessid)
+        public static void checkIn(String[,] creds)
         {
             string postData = "a=atdck&atd_text=비빕! 보봅! 안녕하세요~!&c=119&m=attend1";
             byte[] postArray = Encoding.UTF8.GetBytes(postData);
@@ -133,7 +141,8 @@ namespace Korean_TV
             WebReq.ContentType = "application/x-www-form-urlencoded";
             WebReq.ContentLength = postArray.Length;
             WebReq.CookieContainer = new CookieContainer();
-            WebReq.CookieContainer.Add(new Cookie("PHPSESSID", phpsessid, "/", "twzoa.info"));
+            for (int i = 0; i < creds.GetLength(0); i++)
+                WebReq.CookieContainer.Add(new Cookie(creds[i, 0], creds[i, 1], "/", "twzoa.info"));
 
             Stream PostData = WebReq.GetRequestStream();
             PostData.Write(postArray, 0, postArray.Length);
@@ -161,13 +170,14 @@ namespace Korean_TV
             return true;
         }
 
-        private static String website(String urlAddress, String phpsessid)
+        private static String website(String urlAddress, String[,] cookies)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
-            if(phpsessid != null)
+            if (cookies != null)
             {
                 request.CookieContainer = new CookieContainer();
-                request.CookieContainer.Add(new Cookie("PHPSESSID", phpsessid, "/", "twzoa.info"));
+                for (int i = 0; i < cookies.GetLength(0); i++)
+                    request.CookieContainer.Add(new Cookie(cookies[i, 0], cookies[i, 1], "/", "twzoa.info"));
             }
 
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
@@ -219,7 +229,7 @@ namespace Korean_TV
             HtmlDocument html = new HtmlDocument();
             html.LoadHtml(data);
             
-            website(link + "&a=score&value=good", phpsessid); //Like
+            website(link + "&a=score&value=good", cookies); //Like
             if(!commentExist(html))
                 comment(link, id); //Comment
 
@@ -239,7 +249,6 @@ namespace Korean_TV
                 return;
 
             //Console.WriteLine(show.title);
-            show.phpsessid = phpsessid;
             show.torrent = uri.ToString();
             list.Add(show);
         }
@@ -265,7 +274,8 @@ namespace Korean_TV
         {
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(show.torrent);
             req.CookieContainer = new CookieContainer();
-            req.CookieContainer.Add(new Cookie("PHPSESSID", show.phpsessid, "/", "twzoa.info"));
+            for (int i = 0; i < cookies.GetLength(0); i++)
+                req.CookieContainer.Add(new Cookie(cookies[i, 0], cookies[i, 1], "/", "twzoa.info"));
             HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
             Stream sr = resp.GetResponseStream();
             

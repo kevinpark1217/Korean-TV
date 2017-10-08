@@ -37,12 +37,12 @@ namespace Korean_TV
             string username = "itanimulli";
             string password = "d20yi2kqexl1";
 
-            String phpsessid = Website.login(username, password);
-            Website.checkIn(phpsessid);
+            String[,] creds = Website.login(username, password);
+            Website.checkIn(creds);
 
-            Website varietySite = new Website(variety, varietyLink, phpsessid, 1);
-            Website newsSite = new Website(news, newsLink, phpsessid, 1);
-            Website dramaSite = new Website(drama, dramaLink, phpsessid, 0);
+            Website varietySite = new Website(variety, varietyLink, creds, 1);
+            Website newsSite = new Website(news, newsLink, creds, 1);
+            Website dramaSite = new Website(drama, dramaLink, creds, 0);
             
             if (varietySite.retrieve(1, 2))
                 varietySite.download();
@@ -51,7 +51,7 @@ namespace Korean_TV
             if (dramaSite.retrieve(1, 1))
                 dramaSite.download();
 
-            Website.logout(phpsessid);
+            Website.logout(creds);
 
             //Console.Read();
         }

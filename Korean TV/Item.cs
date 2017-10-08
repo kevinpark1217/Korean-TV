@@ -16,7 +16,6 @@ namespace Korean_TV
         public DateTime time;
 
         private int naming = -1;
-        public String phpsessid;
         public String torrent;
 
         public Item(string file, string contentsDir)
