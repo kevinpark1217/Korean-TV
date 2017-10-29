@@ -43,7 +43,7 @@ namespace Korean_TV
             Website varietySite = new Website(variety, varietyLink, creds, 1);
             Website newsSite = new Website(news, newsLink, creds, 1);
             Website dramaSite = new Website(drama, dramaLink, creds, 0);
-            
+
             if (varietySite.retrieve(1, 2))
                 varietySite.download();
             if (newsSite.retrieve(1, 1))

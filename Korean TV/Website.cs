@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace Korean_TV
 {
@@ -14,6 +15,7 @@ namespace Korean_TV
     {
         private static readonly String domain = "tczoa.info";
         private static readonly Uri address = new Uri("https://" + domain + "/");
+        private static readonly int maxTries = 5;
         private string type;
         private string listAddress;
         private int naming;
@@ -173,15 +175,28 @@ namespace Korean_TV
 
         private static String website(String urlAddress, String[,] cookies)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
-            if (cookies != null)
+            HttpWebResponse response = null;
+            int count = 0;
+            while(response == null)
             {
-                request.CookieContainer = new CookieContainer();
-                for (int i = 0; i < cookies.GetLength(0); i++)
-                    request.CookieContainer.Add(new Cookie(cookies[i, 0], cookies[i, 1], "/", domain));
+                try
+                {
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
+                    if (cookies != null)
+                    {
+                        request.CookieContainer = new CookieContainer();
+                        for (int i = 0; i < cookies.GetLength(0); i++)
+                            request.CookieContainer.Add(new Cookie(cookies[i, 0], cookies[i, 1], "/", domain));
+                    }
+                    response = (HttpWebResponse)request.GetResponse();
+                }
+                catch (WebException e) when ((e.Status == WebExceptionStatus.Timeout || e.Status == WebExceptionStatus.ProtocolError) && count < maxTries)
+                {
+                    //Console.WriteLine("Timeout: " + urlAddress);
+                    count++;
+                }
             }
 
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
             if (response.StatusCode == HttpStatusCode.OK)
             {

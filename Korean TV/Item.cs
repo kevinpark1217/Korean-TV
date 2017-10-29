@@ -23,7 +23,7 @@ namespace Korean_TV
             file = file.Replace("[토렌트] ", "");
             if (Regex.IsMatch(file, @"(?i:\.720p[-\ ]NEXT)")) nextParse(file);
             //else if (Regex.IsMatch(file, @"(?i:.720p[-\ ]CineBus)")) cinebusParse(file);
-            else if (Regex.IsMatch(file, @"(?i:\.((720)|(450))p[-\ ]Unknown)")) unknownParse(file);
+            else if (Regex.IsMatch(file, @"(?i:\.((720)|(450))p[-\ ]Unknown)") && Regex.IsMatch(file, @"(\d\d\d\d\d\d\.)")) unknownParse(file);
             //else if (Regex.IsMatch(file, @"(?i:\.720p[-\ ]SolKae™)")) solkaeParse(file);
             else return;
 
@@ -78,10 +78,13 @@ namespace Korean_TV
         {
             file = Regex.Replace(file, @"[\[]+(.*?)+[\]] ", "");
             file = Regex.Replace(file, @"(?i:\.END)", "");
+            file = Regex.Replace(file, @"(?i:\.HDTV\.H264)", "");
             file = file.Substring(0, Regex.Match(file, @"(?i:\.720p[-\ ]NEXT)").Index);
             file = file.Trim();
             
             Match dateMatch = Regex.Match(file, @"(\.\d\d\d\d\d\d)");
+            if (!dateMatch.Success)
+                return;
             string date = dateMatch.Value;
             int year = Convert.ToInt32(date.Substring(1, 2)) + 2000;
             int month = Convert.ToInt32(date.Substring(3, 2));
@@ -172,9 +175,13 @@ namespace Korean_TV
         public override bool Equals(object obj)
         {
             Item show = (Item)obj;
-            if(title.Equals(show.title) && DateTime.Equals(time, show.time) )
-                if ( (episode != 0 && episode == show.episode && season == show.season) || (episodeTitle == null && show.episodeTitle == null) || (episodeTitle.Equals(show.episodeTitle)) )
+            if (title.Equals(show.title) && DateTime.Equals(time, show.time))
+            {
+                if (episode == show.episode && season == show.season && (episode != 0 || (episodeTitle == null && show.episodeTitle == null)))
                     return true;
+                else if (episodeTitle != null && show.episodeTitle != null && episodeTitle.Equals(show.episodeTitle))
+                    return true;
+            }
             return false;
         }
 
