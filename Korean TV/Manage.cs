@@ -49,8 +49,12 @@ namespace Korean_TV
             foreach(string file in files)
             {
                 DateTime modify = File.GetLastWriteTime(file);
-                if ((DateTime.Now - modify).Hours > maxHours)
-                    File.Delete(file);
+                try
+                {
+                    if ((DateTime.Now - modify).TotalHours > maxHours)
+                        File.Delete(file);
+                }
+                catch (IOException) { } //Ignore file being used
             }
         }
 
